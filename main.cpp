@@ -65,7 +65,7 @@ int main(){
     cout<<"-----Jps::JumpStraight() test-----"<<"\n";
     jps.Init();
     Jps::PathNode jumpNode;
-    jumpNode = jps.JumpStraight(jps.pathMap,jps.startNode,Jps::p_down);
+    jumpNode = jps.JumpStraight(jps.pathMap,jps.startNode,Jps::p_left);
     cout<<"jumpNode.isnull: "<<jumpNode.isnull<<endl;
     cout<<"jumpNode.row,jumpNode.col: "<<jumpNode.row<<","<<jumpNode.col<<endl;
 

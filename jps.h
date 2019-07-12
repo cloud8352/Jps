@@ -45,6 +45,7 @@ public:
     bool* Prune(short unitMap,char p,char n);
     void Init();
     PathNode JumpStraight(PathNode** _pathMap,PathNode currenNode,Direct dir);
+    PathNode JumpOblique(PathNode** _pathMap,PathNode currenNode,Direct dir);
 
 
 };
