@@ -4,6 +4,7 @@
 #include<cmath>
 
 using namespace std;
+using std::vector;
 
 class Astar
 {

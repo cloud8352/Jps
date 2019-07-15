@@ -71,6 +71,16 @@ int main(){
 
     cout<<"-----------------------------"<<"\n";
 
+    cout<<"-----Jps::JumpStraight() test-----"<<"\n";
+    jumpNode = jps.JumpOblique(jps.pathMap,jps.startNode,Jps::p_rightdown);
+    cout<<"jumpNode.isnull: "<<jumpNode.isnull<<endl;
+    cout<<"jumpNode.row,jumpNode.col: "<<jumpNode.row<<","<<jumpNode.col<<endl;
+
+    cout<<"-----------------------------"<<"\n";
+
+    jps.FindPath();
+
+
     system("pause");
     return 0;
 }

@@ -1,5 +1,8 @@
 #include"jps.h"
 
+using namespace std;
+using std::vector;
+
 //判断邻居类型，是否是最佳邻居和强迫邻居
 //入参：单元地图8位二进制格式(十进制范围0-255)，父节点位置(0-8)、检测的邻居的位置(0-8)
 //当前点在单元地图的4位置
@@ -391,6 +394,7 @@ Jps::PathNode Jps::JumpStraight(PathNode** _pathMap,PathNode currenNode,Direct d
     while(1){
         nodeTmp.row += delta_y;
         nodeTmp.col += delta_x;
+        //nodeTmp.value = _pathMap[nodeTmp.row][nodeTmp.col].value;
         cout<<nodeTmp.row<<","<<nodeTmp.col<<endl;
         //如果搜寻到终点就返回
         if(nodeTmp.row == endNode.row &&
@@ -461,15 +465,15 @@ Jps::PathNode Jps::JumpOblique(PathNode** _pathMap,PathNode currenNode,Direct di
         straightDirs[1] = p_up;
         break;
     case p_leftdown:
-        delta_x = 1;
-        delta_y = -1;
+        delta_x = -1;
+        delta_y = 1;
         parent = 2;
         straightDirs[0] = p_left;
         straightDirs[1] = p_down;
         break;
     case p_rightup:
-        delta_x = -1;
-        delta_y = 1;
+        delta_x = 1;
+        delta_y = -1;
         parent = 6;
         straightDirs[0] = p_right;
         straightDirs[1] = p_up;
@@ -490,6 +494,7 @@ Jps::PathNode Jps::JumpOblique(PathNode** _pathMap,PathNode currenNode,Direct di
     while(1){
         nodeTmp.row += delta_y;
         nodeTmp.col += delta_x;
+        //nodeTmp.value = _pathMap[nodeTmp.row][nodeTmp.col].value;
         cout<<nodeTmp.row<<","<<nodeTmp.col<<endl;
         //如果搜寻到终点就返回
         if(nodeTmp.row == endNode.row &&
@@ -546,3 +551,123 @@ Jps::PathNode Jps::JumpOblique(PathNode** _pathMap,PathNode currenNode,Direct di
 
     }
 }
+
+
+void Jps::FindPath(){
+    vector<Direct> jumpDirs;//存放当前需要跳跃的方向
+    vector<Direct>::iterator dirsIt;//用于检索反向树的迭代器
+    PathNode jumpNode;//返回的跳点
+    bool* nodeTyp;//返回的邻居类型
+
+    PathNode currentNode;//当前节点
+    PathNode* detectNode; //探测点,因为要开辟新的空间，所以设置为指针类型
+    vector<PathNode> openTree;//开放列表，关闭列表是用辅助地图各点的isfind属性维护的
+
+    currentNode =  startNode;//当前点为开始点
+    pathMap[currentNode.row][currentNode.col].isfind = true;
+
+
+    for(int i=0;i <8;i++){
+        jumpDirs.push_back( (Direct)i);
+    }
+
+    cout<<"初始方向树（八个方向）：";//------------------------------------------------------
+    for(dirsIt = jumpDirs.begin();dirsIt != jumpDirs.end(); dirsIt++){
+        cout<<(*dirsIt)<<" ";
+    }
+    cout<<"\n";
+
+    //寻路
+    while(1){
+
+        //利用当前点，以及parent方向，往所有“真。邻居“方向跳跃
+        for(dirsIt = jumpDirs.begin();dirsIt != jumpDirs.end(); dirsIt++){
+            cout<<(*dirsIt)<<" "<<endl;
+            if( *(dirsIt) == p_up|| *(dirsIt) == p_down|| *(dirsIt) == p_left|| *(dirsIt) == p_right){
+                jumpNode = JumpStraight(pathMap, currentNode, (*dirsIt) );
+            }
+            if( *(dirsIt) == p_leftup|| *(dirsIt) == p_leftdown|| *(dirsIt) == p_rightup|| *(dirsIt) == p_rightdown){
+                jumpNode = JumpOblique(pathMap, currentNode, (*dirsIt) );
+            }
+
+            //如果返回的是有效节点，且不在关闭列表中（未找过）
+            if(false == jumpNode.isnull && false == pathMap[jumpNode.row][jumpNode.col].isfind){
+                //detectNode = new PathNode;
+                //memset(detectNode,0, sizeof(PathNode) );
+                //detectNode->row = jumpNode.row;
+                //detectNode->col = jumpNode.col;
+                //--计算探测点的g、h和f值
+                //detectNode->g = pathMap[currentNode.row][currentNode.col].g +GetDis(currentNode, jumpNode);
+                //detectNode->h = GetH(jumpNode, endNode);
+                //detectNode->GetF();
+
+                jumpNode.g = pathMap[currentNode.row][currentNode.col].g +GetDis( currentNode, jumpNode);
+                //如果该点已经在开放列表中，比较g值，取g值较小的点的属性，并不用再次加入开放列表
+                if(pathMap[jumpNode.row][jumpNode.col].inopen){
+                    if(pathMap[jumpNode.row][jumpNode.col].g > jumpNode.g){
+                        pathMap[jumpNode.row][jumpNode.col].g = jumpNode.g;
+                        pathMap[jumpNode.row][jumpNode.col].GetF();
+                        pathMap[jumpNode.row][jumpNode.col].parent = &currentNode;
+                    }
+
+                }
+                if(false == pathMap[jumpNode.row][jumpNode.col].inopen){
+                    jumpNode.h = GetH(jumpNode, endNode);
+                    jumpNode.GetF();
+                    jumpNode.inopen = true;
+
+                    //将探测点加入开放列表
+                    openTree.push_back(jumpNode);
+                    //更新辅助地图中对应探测点的节点属性
+                    pathMap[jumpNode.row][jumpNode.col].g = jumpNode.g;
+                    pathMap[jumpNode.row][jumpNode.col].h = jumpNode.h;
+                    pathMap[jumpNode.row][jumpNode.col].f = jumpNode.f;
+                    pathMap[jumpNode.row][jumpNode.col].parent = &currentNode;
+                    pathMap[jumpNode.row][jumpNode.col].inopen = jumpNode.inopen;
+                }
+
+
+                //system("pause");
+
+            }
+
+
+        }
+
+        //找下一点
+        vector<PathNode>::iterator it;
+        vector<PathNode>::iterator minF_iter;
+        minF_iter = openTree.begin();
+        cout<<endl<<"找下一点"<<endl;
+        for(it =openTree.begin();it !=openTree.end(); it++){
+            cout<<(*it).row<<","<<(*it).col<<endl;
+            if(pathMap[(*it).row][(*it).col].f < pathMap[(*minF_iter).row][(*minF_iter).col].f){
+                minF_iter = it;
+            }
+        }
+
+        cout<<endl<<"找到的下一点: ";
+        cout<<(*minF_iter).row<<","<<(*minF_iter).col<<endl;
+
+        currentNode = (*minF_iter);
+
+        pathMap[currentNode.row][currentNode.col].isfind = true;
+
+        if(currentNode.row == endNode.row && currentNode.col == endNode.col) break;
+
+        if(openTree.size() == 0) break;
+
+        openTree.erase(minF_iter);
+
+        //获取当店节点即将要搜寻的方向，jumpDirs
+
+
+        system("pause");
+
+    }
+
+
+
+}
+
+
