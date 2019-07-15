@@ -33,7 +33,7 @@ public:
 
     int height,width;
 
-    PathNode** pathMap;//¸¨ÖúµØÍ¼
+    PathNode*** pathMap;//¸¨ÖúµØÍ¼
     PathNode startNode;
     PathNode endNode;
 
@@ -60,8 +60,8 @@ public:
 
     bool* Prune(short unitMap,char p,char n);
     void Init();
-    PathNode JumpStraight(PathNode** _pathMap,PathNode currenNode,Direct dir);
-    PathNode JumpOblique(PathNode** _pathMap,PathNode currenNode,Direct dir);
+    PathNode JumpStraight(PathNode*** _pathMap,PathNode currenNode,Direct dir);
+    PathNode JumpOblique(PathNode*** _pathMap,PathNode currenNode,Direct dir);
     void FindPath();
 
 
