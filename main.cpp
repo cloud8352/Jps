@@ -63,7 +63,7 @@ int main(){
     cout<<"-----------------------------"<<"\n";
 
     cout<<"-----Jps::JumpStraight() test-----"<<"\n";
-    jps.Init();
+    jps.Init(a, 8, 15);
     Jps::PathNode jumpNode;
     jumpNode = jps.JumpStraight(jps.pathMap,jps.startNode,Jps::p_left);
     cout<<"jumpNode.isnull: "<<jumpNode.isnull<<endl;
@@ -77,8 +77,10 @@ int main(){
     cout<<"jumpNode.row,jumpNode.col: "<<jumpNode.row<<","<<jumpNode.col<<endl;
 
     cout<<"-----------------------------"<<"\n";
+    Jps::PathNode jStart = {0, 0};
+    Jps::PathNode jEnd = {5, 13};
 
-    jps.FindPath();
+    jps.FindPath(jStart, jEnd);
 
 
     system("pause");

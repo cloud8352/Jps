@@ -1,7 +1,5 @@
 #include"jps.h"
 
-using namespace std;
-using std::vector;
 
 //判断邻居类型，是否是最佳邻居和强迫邻居
 //入参：单元地图8位二进制格式(十进制范围0-255)，父节点位置(0-8)、检测的邻居的位置(0-8)
@@ -301,35 +299,15 @@ bool* Jps::Prune(short unitMap,char p,char n){
     return retType;
 }
 
-void Jps::Init(){
-
-    jumpPointTmp = new PathNode;
-    memset(jumpPointTmp, 0, sizeof(PathNode));
-    jumpPointTmp->row = 5;
-    jumpPointTmp->col = 2;
-
-    //cout<<jumpPointTmp->row<<jumpPointTmp->col;
+void Jps::Init(int **_map,int _height,int _width){
 
     //初始化空节点
     nullNode.isnull = true;
 
-    height = 8;
-    width = 15;
-
-    int test_map[height][width] = {
-        {0,0,1,1,0,0,0,0,0,0,0,1,1,0,1},
-        {0,0,1,1,0,0,0,0,0,0,0,0,0,0,1},
-        {0,0,1,1,0,0,1,1,0,0,0,1,1,0,0},
-        {0,0,1,1,0,0,1,1,0,0,1,1,0,0,0},
-        {0,0,1,1,0,0,1,1,0,0,0,0,1,1,0},
-        {0,0,0,0,0,0,1,1,0,0,1,0,1,0,0},
-        {0,0,0,0,0,0,1,1,0,0,0,0,0,0,0},
-        {0,0,1,1,0,0,1,1,0,0,0,0,0,0,0}
-
-    };
+    height = _height;
+    width = _width;
 
     //建立辅助地图
-    cout<<endl;
     pathMap = new PathNode**[height];
     for(int i=0;i<height;i++){
         pathMap[i] = new PathNode*[width];
@@ -340,20 +318,9 @@ void Jps::Init(){
             pathMap[i][j]->col = j;
             pathMap[i][j]->isfind = false;
             pathMap[i][j]->isroute = false;
-            pathMap[i][j]->value = test_map[i][j];
-            cout<<pathMap[i][j]->value;
+            pathMap[i][j]->value = _map[i][j];
         }
-        cout<<endl;
     }
-
-    //设置开始结束点
-    startNode.row = 1;
-    startNode.col = 0;
-
-    endNode.row = 4;
-    endNode.col = 14;
-
-    //从开始点出发，寻找跳点
 
 }
 
@@ -401,7 +368,7 @@ Jps::PathNode Jps::JumpStraight(PathNode*** _pathMap,PathNode currenNode,Direct 
     while(1){
         nodeTmp.row += delta_y;
         nodeTmp.col += delta_x;
-        cout<<nodeTmp.row<<","<<nodeTmp.col<<endl;
+        cout<<"直跳跃："<<nodeTmp.row<<","<<nodeTmp.col<<endl;
         //如果搜寻到终点就返回
         if(nodeTmp.row == endNode.row &&
            nodeTmp.col == endNode.col) return nodeTmp;
@@ -500,7 +467,7 @@ Jps::PathNode Jps::JumpOblique(PathNode*** _pathMap,PathNode currenNode,Direct d
     while(1){
         nodeTmp.row += delta_y;
         nodeTmp.col += delta_x;
-        cout<<nodeTmp.row<<","<<nodeTmp.col<<endl;
+        cout<<"斜跳跃："<<nodeTmp.row<<","<<nodeTmp.col<<endl;
         //如果搜寻到终点就返回
         if(nodeTmp.row == endNode.row &&
            nodeTmp.col == endNode.col) return nodeTmp;
@@ -558,7 +525,11 @@ Jps::PathNode Jps::JumpOblique(PathNode*** _pathMap,PathNode currenNode,Direct d
 }
 
 
-void Jps::FindPath(){
+vector<Jps::PathNode> Jps::FindPath(PathNode _startNode,PathNode _endNode){
+    //设置开始结束点
+    startNode = _startNode;
+    endNode = _endNode;
+
     vector<Direct> jumpDirs;//存放当前需要跳跃的方向
     vector<Direct>::iterator dirsIt;//用于检索反向树的迭代器
     PathNode jumpNode;//返回的跳点
@@ -566,19 +537,16 @@ void Jps::FindPath(){
 
     PathNode currentNode;//当前节点
     vector<PathNode> openTree;//开放列表，关闭列表是用辅助地图各点的isfind属性维护的
+    vector<PathNode>::iterator it;//用于迭代
+    vector<PathNode>::iterator minF_iter;//存放最小f值节点
 
     currentNode =  startNode;//当前点为开始点
     pathMap[currentNode.row][currentNode.col]->isfind = true;
 
+    //初始方向树（八个方向）
     for(int i=0;i <8;i++){
         jumpDirs.push_back( (Direct)i);
     }
-
-    cout<<"初始方向树（八个方向）：";//------------------------------------------------------
-    for(dirsIt = jumpDirs.begin();dirsIt != jumpDirs.end(); dirsIt++){
-        cout<<(*dirsIt)<<" ";
-    }
-    cout<<"\n";
 
     //寻路
     while(1){
@@ -632,8 +600,6 @@ void Jps::FindPath(){
         }
 
         //找下一点
-        vector<PathNode>::iterator it;
-        vector<PathNode>::iterator minF_iter;
         minF_iter = openTree.begin();
         cout<<endl<<"找下一点"<<endl;
         for(it =openTree.begin();it !=openTree.end(); it++){
@@ -715,10 +681,31 @@ void Jps::FindPath(){
             }
         }//end-获取当前搜寻点周围点类型，并赋值探测方向组
 
-        system("pause");
+        //system("pause");
 
     }
 
+    //返回路径
+    vector<PathNode> retPathTmp;
+    vector<PathNode> retPath;
+    PathNode nodeTmp = endNode;
+    while(NULL != pathMap[nodeTmp.row][nodeTmp.col]->parent){
+        int row_t = nodeTmp.row;
+        int col_t = nodeTmp.col;
+        retPathTmp.push_back(nodeTmp);
+        nodeTmp.row = pathMap[row_t][col_t]->parent->row;
+        nodeTmp.col = pathMap[row_t][col_t]->parent->col;
+    }
+    //将路径整理为从开始点出发的顺序
+    cout<<endl;
+    for(it =retPathTmp.end();it != retPathTmp.begin() -1; it--){
+        retPath.push_back(*it);
+        cout<<(*it).row<<","<<(*it).col<<" ";
+    }
+    cout<<endl;
+
+    vector<PathNode>().swap(retPathTmp);//释放内存
+    return retPath;
 
 
 }

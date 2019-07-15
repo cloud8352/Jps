@@ -4,6 +4,7 @@
 #include<cmath>
 
 using namespace std;
+using std::vector;
 
 class Jps
 {
@@ -39,11 +40,6 @@ public:
 
     PathNode nullNode;//空节点
 
-    PathNode* jumpPointTmp;
-
-
-    vector<PathNode*> jumpPointTree;//存放所有跳点
-
 
     //计算两点直线距离
     int GetDis(const PathNode& startNode,const PathNode& endNode){
@@ -59,10 +55,9 @@ public:
 
 
     bool* Prune(short unitMap,char p,char n);
-    void Init();
+    void Init(int **_map,int _height,int _width);
     PathNode JumpStraight(PathNode*** _pathMap,PathNode currenNode,Direct dir);
     PathNode JumpOblique(PathNode*** _pathMap,PathNode currenNode,Direct dir);
-    void FindPath();
-
+    vector<PathNode> FindPath(PathNode _startNode,PathNode _endNode);
 
 };
