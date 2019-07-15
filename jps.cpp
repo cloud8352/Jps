@@ -689,16 +689,17 @@ vector<Jps::PathNode> Jps::FindPath(PathNode _startNode,PathNode _endNode){
     vector<PathNode> retPathTmp;
     vector<PathNode> retPath;
     PathNode nodeTmp = endNode;
-    while(NULL != pathMap[nodeTmp.row][nodeTmp.col]->parent){
+    while(1){
         int row_t = nodeTmp.row;
         int col_t = nodeTmp.col;
         retPathTmp.push_back(nodeTmp);
+        if(NULL == pathMap[nodeTmp.row][nodeTmp.col]->parent) break;
         nodeTmp.row = pathMap[row_t][col_t]->parent->row;
         nodeTmp.col = pathMap[row_t][col_t]->parent->col;
     }
     //将路径整理为从开始点出发的顺序
     cout<<endl;
-    for(it =retPathTmp.end();it != retPathTmp.begin() -1; it--){
+    for(it =retPathTmp.end()-1;it != retPathTmp.begin() -1; it--){
         retPath.push_back(*it);
         cout<<(*it).row<<","<<(*it).col<<" ";
     }

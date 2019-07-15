@@ -77,7 +77,7 @@ int main(){
     cout<<"jumpNode.row,jumpNode.col: "<<jumpNode.row<<","<<jumpNode.col<<endl;
 
     cout<<"-----------------------------"<<"\n";
-    Jps::PathNode jStart = {0, 0};
+    Jps::PathNode jStart = {6, 0};
     Jps::PathNode jEnd = {5, 13};
 
     jps.FindPath(jStart, jEnd);
