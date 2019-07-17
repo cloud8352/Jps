@@ -599,6 +599,7 @@ vector<Jps::PathNode> Jps::FindPath(PathNode _startNode,PathNode _endNode){
 
         }
 
+        if(openTree.size() == 0) break;
         //找下一点
         minF_iter = openTree.begin();
         cout<<endl<<"找下一点"<<endl;
@@ -617,8 +618,6 @@ vector<Jps::PathNode> Jps::FindPath(PathNode _startNode,PathNode _endNode){
         pathMap[currentNode.row][currentNode.col]->isfind = true;
 
         if(currentNode.row == endNode.row && currentNode.col == endNode.col) break;
-
-        if(openTree.size() == 0) break;
 
         openTree.erase(minF_iter);
 
