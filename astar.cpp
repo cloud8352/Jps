@@ -209,6 +209,7 @@ void Astar::PrintRoute(){
 void Astar::PrintRouteMap(){
 
     //打印路线地图
+    cout << endl;
     for(int i=0;i < ROW;i++){
         for(int j=0;j < COL;j++){
             if(pathMap[i][j].isroute)
