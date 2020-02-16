@@ -11,11 +11,11 @@ using namespace std;    //使用standard命名空间
 int main(){
     system("mode con cols=120 lines=600");
     //行row，列col
-    int height = 400;
-    int width = 400;
+    int height = 100;
+    int width = 100;
 
     int start_x =1,start_y =1;
-    int end_x   =6,end_y  =395;
+    int end_x   =5,end_y  =95;
     cout<<"地图尺寸（height*width）: "<<height<<"*"<<width;
     cout<<endl<<"开始点（y，x）："<<start_y<<","<<start_x<<endl;
     cout<<"结束点（y，x）："<<end_y<<","<<end_x<<endl;
@@ -23,7 +23,7 @@ int main(){
     time_t time_start_ms,time_end_ms;//时间记录ms
 
     //读取地图
-    string filepath="map/map400x400.txt";
+    string filepath="map/map100x100_small.txt";
     ifstream fin(filepath.c_str());
     if(!fin) {cout<<endl<<"文件不存在"<<endl; system("pause");}
 
@@ -56,6 +56,7 @@ int main(){
     cout<<"a星寻路使用时间："<<difftime(time_end_ms, time_start_ms)<<"ms";
 
     astar.PrintRoute();
+    astar.PrintRouteMap();
 
     system("pause");
 

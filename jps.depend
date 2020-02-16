@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1565019094 source:d:\space\space\c\cpp\jps\astar.cpp
+1581865963 source:d:\space\space\c\cpp\jps\astar.cpp
 	"astar.h"
 
 1562130494 d:\space\space\c\cpp\jps\node.h
@@ -17,7 +17,7 @@
 	<vector>
 	<cmath>
 
-1565019226 source:d:\space\space\c\cpp\jps\main.cpp
+1581865880 source:d:\space\space\c\cpp\jps\main.cpp
 	<iostream>
 	<cstring>
 	<fstream>
