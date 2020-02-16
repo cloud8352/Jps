@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1563010022 source:d:\space\space\c\cpp\jps\astar.cpp
+1565019094 source:d:\space\space\c\cpp\jps\astar.cpp
 	"astar.h"
 
 1562130494 d:\space\space\c\cpp\jps\node.h
@@ -8,23 +8,54 @@
 	<assert.h>
 	<vector>
 
-1563158157 source:d:\space\space\c\cpp\jps\jps.cpp
+1565018936 source:d:\space\space\c\cpp\jps\jps.cpp
 	"jps.h"
 
-1563010163 d:\space\space\c\cpp\jps\astar.h
+1565017173 d:\space\space\c\cpp\jps\astar.h
 	<iostream>
 	<windows.h>
 	<vector>
 	<cmath>
 
-1563165528 source:d:\space\space\c\cpp\jps\main.cpp
+1565019226 source:d:\space\space\c\cpp\jps\main.cpp
 	<iostream>
+	<cstring>
+	<fstream>
+	<time.h>
+	<windows.h>
 	"astar.h"
 	"jps.h"
 
-1563158165 d:\space\space\c\cpp\jps\jps.h
+1564192546 d:\space\space\c\cpp\jps\jps.h
 	<iostream>
 	<windows.h>
 	<vector>
 	<cmath>
+
+1564194034 source:d:\space\space\c\cpp\jps_hr\jps\astar.cpp
+	"astar.h"
+
+1564193864 d:\space\space\c\cpp\jps_hr\jps\astar.h
+	<iostream>
+	<windows.h>
+	<vector>
+	<cmath>
+
+1564193943 source:d:\space\space\c\cpp\jps_hr\jps\main.cpp
+	<iostream>
+	<cstring>
+	<fstream>
+	<time.h>
+	<windows.h>
+	"astar.h"
+	"jps.h"
+
+1564192546 d:\space\space\c\cpp\jps_hr\jps\jps.h
+	<iostream>
+	<windows.h>
+	<vector>
+	<cmath>
+
+1564192595 source:d:\space\space\c\cpp\jps_hr\jps\jps.cpp
+	"jps.h"
 

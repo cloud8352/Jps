@@ -3,7 +3,7 @@
 
 //判断邻居类型，是否是最佳邻居和强迫邻居
 //入参：单元地图8位二进制格式(十进制范围0-255)，父节点位置(0-8)、检测的邻居的位置(0-8)
-//当前点在单元地图的4位置
+//当前点在单元地图的中心（4）位置
 bool* Jps::Prune(short unitMap,char p,char n){
     static bool retType[2];//返回的类型
     char obstaclePos = 0;
@@ -368,7 +368,7 @@ Jps::PathNode Jps::JumpStraight(PathNode*** _pathMap,PathNode currenNode,Direct 
     while(1){
         nodeTmp.row += delta_y;
         nodeTmp.col += delta_x;
-        cout<<"直跳跃："<<nodeTmp.row<<","<<nodeTmp.col<<endl;
+        //cout<<"直跳跃："<<nodeTmp.row<<","<<nodeTmp.col<<endl;
         //如果搜寻到终点就返回
         if(nodeTmp.row == endNode.row &&
            nodeTmp.col == endNode.col) return nodeTmp;
@@ -467,7 +467,7 @@ Jps::PathNode Jps::JumpOblique(PathNode*** _pathMap,PathNode currenNode,Direct d
     while(1){
         nodeTmp.row += delta_y;
         nodeTmp.col += delta_x;
-        cout<<"斜跳跃："<<nodeTmp.row<<","<<nodeTmp.col<<endl;
+        //cout<<"斜跳跃："<<nodeTmp.row<<","<<nodeTmp.col<<endl;
         //如果搜寻到终点就返回
         if(nodeTmp.row == endNode.row &&
            nodeTmp.col == endNode.col) return nodeTmp;
@@ -553,7 +553,7 @@ vector<Jps::PathNode> Jps::FindPath(PathNode _startNode,PathNode _endNode){
 
         //利用当前点，以及parent方向，往所有“真。邻居“方向跳跃
         for(dirsIt = jumpDirs.begin();dirsIt != jumpDirs.end(); dirsIt++){
-            cout<<"方向："<<(*dirsIt)<<" "<<endl;
+            //cout<<"方向："<<(*dirsIt)<<" "<<endl;
             if( *(dirsIt) == p_up|| *(dirsIt) == p_down|| *(dirsIt) == p_left|| *(dirsIt) == p_right){
                 jumpNode = JumpStraight(pathMap, currentNode, (*dirsIt) );
             }
@@ -602,16 +602,31 @@ vector<Jps::PathNode> Jps::FindPath(PathNode _startNode,PathNode _endNode){
         if(openTree.size() == 0) break;
         //找下一点
         minF_iter = openTree.begin();
-        cout<<endl<<"找下一点"<<endl;
+        //cout<<endl<<"找下一点"<<endl;
         for(it =openTree.begin();it !=openTree.end(); it++){
-            cout<<(*it).row<<","<<(*it).col<<endl;
+            //cout<<(*it).row<<","<<(*it).col<<endl;
             if(pathMap[(*it).row][(*it).col]->f < pathMap[(*minF_iter).row][(*minF_iter).col]->f){
                 minF_iter = it;
             }
         }
 
+        //cout<<endl<<"找到的下一点: ";
+        //cout<<(*minF_iter).row<<","<<(*minF_iter).col<<endl;
+
+#if 0   //调试
         cout<<endl<<"找到的下一点: ";
         cout<<(*minF_iter).row<<","<<(*minF_iter).col<<endl;
+        cout<<"此节点父节点坐标：";
+        PathNode tmp = { (*minF_iter).row,(*minF_iter).col};
+        while(NULL != pathMap[tmp.row][tmp.col]->parent){
+            int t_row = tmp.row,t_col = tmp.col;
+            tmp.row = pathMap[t_row][t_col]->parent->row;
+            tmp.col = pathMap[t_row][t_col]->parent->col;
+            cout<<tmp.row<<","<<tmp.col<<" ";
+        }
+        cout<<endl;
+#endif
+
 
         currentNode = (*minF_iter);
 
@@ -631,8 +646,8 @@ vector<Jps::PathNode> Jps::FindPath(PathNode _startNode,PathNode _endNode){
 
         if(0 > delta_y && 0 ==delta_x) p = 7;//搜寻方向为上
         if(0 < delta_y && 0 ==delta_x) p = 1;//搜寻方向为下
-        if(0 == delta_y && 0 >delta_x) p = 3;//搜寻方向为左
-        if(0 > delta_y && 0 <delta_x) p = 5;//搜寻方向为右
+        if(0 == delta_y && 0 >delta_x) p = 5;//搜寻方向为左
+        if(0 == delta_y && 0 <delta_x) p = 3;//搜寻方向为右
 
         if(0 > delta_y && 0 >delta_x) p = 8;//搜寻方向为左上
         if(0 < delta_y && 0 >delta_x) p = 2;//搜寻方向为左下
@@ -686,7 +701,6 @@ vector<Jps::PathNode> Jps::FindPath(PathNode _startNode,PathNode _endNode){
 
     //返回路径
     vector<PathNode> retPathTmp;
-    vector<PathNode> retPath;
     PathNode nodeTmp = endNode;
     while(1){
         int row_t = nodeTmp.row;
@@ -697,16 +711,31 @@ vector<Jps::PathNode> Jps::FindPath(PathNode _startNode,PathNode _endNode){
         nodeTmp.col = pathMap[row_t][col_t]->parent->col;
     }
     //将路径整理为从开始点出发的顺序
-    cout<<endl;
     for(it =retPathTmp.end()-1;it != retPathTmp.begin() -1; it--){
         retPath.push_back(*it);
-        cout<<(*it).row<<","<<(*it).col<<" ";
     }
-    cout<<endl;
 
     vector<PathNode>().swap(retPathTmp);//释放内存
     return retPath;
 
+
+}
+
+void Jps::PrintRoute(){
+    vector<PathNode>::iterator it;//用于迭代
+    float routLength = 0;//路径总长度
+    cout<<endl<<"route"<<"("<<retPath.size()<<"): ";
+    for(it =retPath.begin();it != retPath.end(); it++){
+        cout<<(*it).row<<","<<(*it).col<<" ";
+        //计算路径长度
+        if(it > retPath.begin()){
+            int row_t = (*it).row,col_t = (*it).col;//本次坐标
+            int row_t_l = (*(it -1) ).row,col_t_l = (*(it -1) ).col;//上次坐标
+            routLength += sqrt( pow( col_t - col_t_l,2) +pow( (row_t - row_t_l),2) );//pow次方函数
+        }
+    }
+    cout<<endl;
+    cout<<"routLength："<<routLength;
 
 }
 

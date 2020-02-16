@@ -1,87 +1,79 @@
 #include <iostream> //"#"代表预处理命令
+#include<cstring>
+#include<fstream>//读写头文件
+#include<time.h>
+#include<windows.h>
 #include"astar.h"
 #include"jps.h"
 using namespace std;    //使用standard命名空间
 
 
 int main(){
+    system("mode con cols=120 lines=600");
     //行row，列col
-    int height = 8;
-    int width = 15;
-    int test_map[height][width] = {
-        {0,0,1,1,0,0,0,0,0,0,0,1,1,0,1},
-        {0,0,1,1,0,0,0,0,0,0,0,0,0,0,1},
-        {0,0,1,1,0,0,1,1,0,0,0,1,1,0,0},
-        {0,0,1,1,0,0,1,1,0,0,1,1,0,0,0},
-        {0,0,1,1,0,0,1,1,0,0,0,0,1,1,0},
-        {0,0,0,0,0,0,1,1,0,0,1,0,1,0,0},
-        {0,0,0,0,0,0,1,1,0,0,0,0,0,0,0},
-        {0,0,1,1,0,0,1,1,0,0,0,0,0,0,0}
+    int height = 400;
+    int width = 400;
 
-    };
+    int start_x =1,start_y =1;
+    int end_x   =6,end_y  =395;
+    cout<<"地图尺寸（height*width）: "<<height<<"*"<<width;
+    cout<<endl<<"开始点（y，x）："<<start_y<<","<<start_x<<endl;
+    cout<<"结束点（y，x）："<<end_y<<","<<end_x<<endl;
 
-    //地图转换成二维指针
-    int **a;
-    a = new int* [height];
+    time_t time_start_ms,time_end_ms;//时间记录ms
+
+    //读取地图
+    string filepath="map/map400x400.txt";
+    ifstream fin(filepath.c_str());
+    if(!fin) {cout<<endl<<"文件不存在"<<endl; system("pause");}
+
+    int **pMap;//地图二维指针数组
+    pMap = new int* [height];
     for(int i=0;i < height;i++){
-        a[i] = new int[width];
+        pMap[i] = new int[width];
         for(int j=0;j < width;j++){
-            a[i][j] = test_map[i][j];
+            char c;
+            fin>>c;
+            if('.' == c) pMap[i][j] = 0;
+            else pMap[i][j] = 1;
+            //cout<<pMap[i][j];
         }
+        //cout<<endl;
     }
 
-    Astar::MyPoint startPoint = {1,1};
-    Astar::MyPoint endPoint = {6,14};
+    Astar::MyPoint startPoint = {start_y,start_x};
+    Astar::MyPoint endPoint = {end_y, end_x};
 
     Astar astar;
-    astar.Init(a, height, width, startPoint, endPoint);
+
+    time_start_ms = clock();//a星寻路开始时间
+
+    astar.Init(pMap, height, width, startPoint, endPoint);
 
     astar.FindPath();
 
+    time_end_ms = clock();//a星寻路结束时间
+    cout<<"a星寻路使用时间："<<difftime(time_end_ms, time_start_ms)<<"ms";
+
+    astar.PrintRoute();
+
+    system("pause");
 
     //JPS
-    cout<<endl<<"--------Jps::Prune test---------"<<"\n";
+    cout<<"------------JPS---------------"<<"\n";
     Jps jps;
-    bool* type;
-    char unitMapArray[3][3] = {
-        {1,0,1},
-        {1,0,0},
-        {1,0,1}
-    };
-    short unitMap = 0x0000;
-    for(int i=0;i <3;i++){
-        for(int j=0;j <3;j++){
-            cout<<(int)unitMapArray[i][j];
-            unitMap = unitMap|(unitMapArray[i][j]<<(i*3+j));
-        }
-        cout<<endl;
-    }
+    Jps::PathNode jStart = {start_y,start_x};
+    Jps::PathNode jEnd = {end_y, end_x};
 
-    cout<<"unitMap = "<<(int)unitMap<<endl;
-    type = jps.Prune(unitMap,7,1);
-    cout<<type[0]<<"-"<<type[1]<<endl;
-    cout<<"-----------------------------"<<"\n";
+    time_start_ms = clock();//JpsPrune寻路开始时间
 
-    cout<<"-----Jps::JumpStraight() test-----"<<"\n";
-    jps.Init(a, 8, 15);
-    Jps::PathNode jumpNode;
-    jumpNode = jps.JumpStraight(jps.pathMap,jps.startNode,Jps::p_left);
-    cout<<"jumpNode.isnull: "<<jumpNode.isnull<<endl;
-    cout<<"jumpNode.row,jumpNode.col: "<<jumpNode.row<<","<<jumpNode.col<<endl;
-
-    cout<<"-----------------------------"<<"\n";
-
-    cout<<"-----Jps::JumpStraight() test-----"<<"\n";
-    jumpNode = jps.JumpOblique(jps.pathMap,jps.startNode,Jps::p_rightdown);
-    cout<<"jumpNode.isnull: "<<jumpNode.isnull<<endl;
-    cout<<"jumpNode.row,jumpNode.col: "<<jumpNode.row<<","<<jumpNode.col<<endl;
-
-    cout<<"-----------------------------"<<"\n";
-    Jps::PathNode jStart = {6, 0};
-    Jps::PathNode jEnd = {5, 13};
+    jps.Init(pMap, height, width);
 
     jps.FindPath(jStart, jEnd);
 
+    time_end_ms = clock();//JpsPrune寻路结束时间
+    cout<<"Jps寻路使用时间："<<difftime(time_end_ms, time_start_ms)<<"ms";
+    jps.PrintRoute();
 
     system("pause");
     return 0;

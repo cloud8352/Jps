@@ -148,14 +148,20 @@ void Astar::FindPath(){
 
         }//--end--找出探路点周围8个可行点，保存到开放列表
 
+        if(openTree.size() == 0) break;
+
         //找出当前点周围最小f值可行点
         it = openTree.begin();
         minF_Iter = it;
+        //cout<<endl<<"在开放列表中的点: ";
         for(it = openTree.begin();it != openTree.end();it++){
+            //cout<<(*it)->pos.row<<","<<(*it)->pos.col<<" ";
             if( (*minF_Iter)->pos.f > (*it)->pos.f){
                 minF_Iter = it;
             }
         }
+        //system("pause");
+
 
         //换层
         if((*minF_Iter)->pos.row == endPoint.row &&
@@ -170,21 +176,38 @@ void Astar::FindPath(){
         //把最小f值可行点从数组(open_list)中删除
         openTree.erase(minF_Iter);
 
-        if(openTree.size() == 0) break;
-
     }//end--while(1)寻路
 
     //路径回溯
-    cout<<"最短路径：";
     MyTreeNode* node_line = (*minF_Iter);
     while(1){
+        retPath.push_back(node_line);
         pathMap[node_line->pos.row][node_line->pos.col].isroute = true;
-        cout<<node_line->pos.row<<","<<node_line->pos.col<<" ";
         node_line = node_line->parent;
         if(node_line == NULL) break;
-
     }
     cout<<endl;
+
+}
+
+void Astar::PrintRoute(){
+    float routLength = 0;//路径总长度
+    cout<<endl<<"route"<<"("<<retPath.size()<<"): ";
+    for(it =retPath.begin();it != retPath.end(); it++){
+        cout<<(*it)->pos.row<<","<<(*it)->pos.col<<" ";
+        //计算路径长度并打印
+        if(it > retPath.begin()){
+            int row_t = (*it)->pos.row,col_t = (*it)->pos.col;//本次坐标
+            int row_t_l = (*(it -1) )->pos.row,col_t_l = (*(it -1) )->pos.col;//上次坐标
+            routLength += sqrt( pow( col_t - col_t_l,2) +pow( (row_t - row_t_l),2) );//pow次方函数
+        }
+    }
+    cout<<endl;
+    cout<<"routLength："<<routLength;
+}
+
+void Astar::PrintRouteMap(){
+
     //打印路线地图
     for(int i=0;i < ROW;i++){
         for(int j=0;j < COL;j++){

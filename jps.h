@@ -40,6 +40,7 @@ public:
 
     PathNode nullNode;//空节点
 
+    vector<PathNode> retPath;//储存最终路径
 
     //计算两点直线距离
     int GetDis(const PathNode& startNode,const PathNode& endNode){
@@ -59,5 +60,6 @@ public:
     PathNode JumpStraight(PathNode*** _pathMap,PathNode currenNode,Direct dir);
     PathNode JumpOblique(PathNode*** _pathMap,PathNode currenNode,Direct dir);
     vector<PathNode> FindPath(PathNode _startNode,PathNode _endNode);
+    void PrintRoute();
 
 };
